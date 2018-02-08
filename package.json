@@ -6,6 +6,9 @@
   "author": "Neopix Omladinci",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "@slack/client": "^3.16.0"
   }
