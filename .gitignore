@@ -1,0 +1,8 @@
+node_modules/
+.idea/
+yarn-error.log
+.env
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

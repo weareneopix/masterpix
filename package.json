@@ -1,0 +1,12 @@
+{
+  "name": "masterpix",
+  "version": "0.0.1",
+  "description": "Mastermind game for Neopix slack",
+  "main": "index.js",
+  "author": "Neopix Omladinci",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@slack/client": "^3.16.0"
+  }
+}
