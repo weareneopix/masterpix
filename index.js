@@ -68,6 +68,11 @@ rtm.on('ws_error', error => {
 rtm.on('raw_message', (event) => {
     const eventJSON = JSON.parse(event);
     if (eventJSON.type === 'message') {
+        if (eventJSON.message) {
+            sendMessage(`I can't (at this point of my development) update your previous attempt. Please make a new one.`, eventJSON.channel, `Message edit.`);
+            return;
+        }
+
         const text = eventJSON.text.trim().toLowerCase();
         if (text === 'start') {
             if (game == null) {
