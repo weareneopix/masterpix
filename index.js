@@ -46,7 +46,7 @@ rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (connectData) => {
 });
 
 // The client will emit an RTM.RTM_CONNECTION_OPEN the connection is ready for
-// sending and recieving messages
+// sending and receiving messages
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPEN, () => {
     console.log(`Ready`);
 });
@@ -67,9 +67,13 @@ rtm.on('ws_error', error => {
 
 rtm.on('raw_message', (event) => {
     const eventJSON = JSON.parse(event);
+
     if (eventJSON.type === 'message') {
-        if (eventJSON.message) {
+        if (eventJSON.subtype === 'message_changed') {
             sendMessage(`I can't (at this point of my development) update your previous attempt. Please make a new one.`, eventJSON.channel, `Message edit.`);
+            return;
+        } else if (eventJSON.subtype === 'message_replied') {
+            // new message in a thread
             return;
         }
 
@@ -81,7 +85,7 @@ rtm.on('raw_message', (event) => {
             } else {
                 sendMessage(`The game has already started`, eventJSON.channel, `New game attempted while running.`);
             }
-        } else if (text === 'end') {
+        } else if (text === 'end' && game) {
             sendMessage(`The end state was ${game.join(' ')}`, eventJSON.channel, `Users gave up.`);
             game = null;
         } else {
