@@ -1,25 +1,6 @@
 const {RtmClient, CLIENT_EVENTS, WebClient} = require('@slack/client');
 const mastermind = require('./mastermind');
-
-const IN_PLACE_SYMBOL = ':red_circle:';
-const OUT_OF_PLACE_SYMBOL = ':large_blue_circle:';
-const PADDING_SYMBOL = ':white_circle:';
-
-const formatInfo = (inPlace, outOfPlace) => {
-    let inPlaceLeft = inPlace;
-    let outOfPlaceLeft = outOfPlace;
-    const result = [PADDING_SYMBOL, PADDING_SYMBOL, PADDING_SYMBOL, PADDING_SYMBOL];
-    for (let i = 0; i < result.length; i++) {
-        if (inPlaceLeft > 0) {
-            result[i] = IN_PLACE_SYMBOL;
-            inPlaceLeft--;
-        } else if (outOfPlaceLeft > 0) {
-            result[i] = OUT_OF_PLACE_SYMBOL;
-            outOfPlaceLeft--;
-        }
-    }
-    return result.join('  ');
-};
+const {attemptToEmoji, formatInfo} = require('./string.helper');
 
 // An access token (from your Slack app or custom integration - usually xoxb)
 const token = process.env.SLACK_TOKEN;
@@ -57,6 +38,7 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
 });
 
 let game = null;
+let attemptNo = 0;
 
 rtm.on(CLIENT_EVENTS.RTM.CONNECTING, () => console.log('Connecting...'));
 rtm.on(CLIENT_EVENTS.RTM.WS_OPENING, () => console.log('Opening...'));
@@ -96,6 +78,7 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
         } else if (text === 'end' && game) {
             sendMessage(`The end state was ${game.join(' ')}`, eventJSON.channel, `Users gave up.`);
             game = null;
+            attemptNo = 0;
         } else if (text === 'song') {
             sendSong(eventJSON.channel);
         } else {
@@ -107,13 +90,16 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
                 match = regex.exec(text);
             }
             if (attempt.length === 4 && attempt.every(mastermind.isSymbol)) {
+                attemptNo++;
                 const result = mastermind.attemptInfo(game, attempt);
-                const msg = formatInfo(result.inPlaceCount, result.outOfPlaceCount);
+                const msg = formatInfo(result.inPlaceCount, result.outOfPlaceCount, attemptNo);
                 sendMessage(msg, eventJSON.channel, `attempt`);
 
                 if (result.inPlaceCount === 4) {
                     sendMessage(`:tada: :tada: BRAVO!! :tada: :tada:`, eventJSON.channel, `bravo`);
+                    sendMessage(`You've completed the game in ${attemptToEmoji(attemptNo)}.`, eventJSON.channel, `attempt info`);
                     game = null;
+                    attemptNo = 0;
 
                     if (eventJSON.user === 'U44RYQQBG') {
                         sendSong(eventJSON.channel);
