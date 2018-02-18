@@ -74,7 +74,10 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
 
     if (eventJSON.type === 'message') {
         if (eventJSON.subtype === 'message_changed') {
-            sendMessage(`I can't (at this point of my development) update your previous attempt. Please make a new one.`, eventJSON.channel, `Message edit.`);
+            if (game) {
+                // game is on, so display proper message
+                sendMessage(`I can't (at this point of my development) update your previous attempt. Please make a new one.`, eventJSON.channel, `Message edit.`);
+            }
             return;
         } else if (eventJSON.subtype === 'message_replied') {
             // new message in a thread
