@@ -47,7 +47,12 @@ rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (connectData) => {
 
 // The client will emit an RTM.RTM_CONNECTION_OPEN the connection is ready for
 // sending and receiving messages
-rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPEN, () => {
+rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
+    channelListPromise
+        .then(channelInfo => {
+            const channels = channelInfo.channels.filter(x => x.is_member);
+            channels.map(sendWelcomeMessage); // send greeting message to all subscribed channels
+        });
     console.log(`Ready`);
 });
 
@@ -58,7 +63,6 @@ rtm.on('ws_opening', () => console.log('Opening...'));
 rtm.on('ws_opened', () => {
     console.log('Opened!');
 });
-
 
 rtm.on('ws_error', error => {
     console.error('ERROR');
@@ -116,6 +120,11 @@ const sendMessage = (text, channel, logMessage) => {
     rtm.sendMessage(text, channel)
         .then(() => console.log(logMessage))
         .catch(e => console.log(e))
+};
+
+const sendWelcomeMessage = (channel) => {
+    const greetingMessage = `Hello people of :neopix:! Let's play a game, shall we? Hit \`start\` whenever you are ready :smile:`;
+    sendMessage(greetingMessage, channel.id, 'Greeting.');
 };
 
 // Start the connecting process
