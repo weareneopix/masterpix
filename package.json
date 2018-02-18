@@ -1,6 +1,6 @@
 {
   "name": "masterpix",
-  "version": "0.0.1",
+  "version": "0.4.0",
   "description": "Mastermind game for Neopix slack",
   "main": "index.js",
   "author": "Neopix Omladinci",
