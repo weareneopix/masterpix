@@ -58,18 +58,18 @@ rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
 
 let game = null;
 
-rtm.on('connecting', () => console.log('Connecting...'));
-rtm.on('ws_opening', () => console.log('Opening...'));
-rtm.on('ws_opened', () => {
+rtm.on(CLIENT_EVENTS.RTM.CONNECTING, () => console.log('Connecting...'));
+rtm.on(CLIENT_EVENTS.RTM.WS_OPENING, () => console.log('Opening...'));
+rtm.on(CLIENT_EVENTS.RTM.WS_OPENED, () => {
     console.log('Opened!');
 });
 
-rtm.on('ws_error', error => {
+rtm.on(CLIENT_EVENTS.RTM.WS_ERROR, error => {
     console.error('ERROR');
     console.error(error);
 });
 
-rtm.on('raw_message', (event) => {
+rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
     const eventJSON = JSON.parse(event);
 
     if (eventJSON.type === 'message') {
