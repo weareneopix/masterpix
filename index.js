@@ -70,6 +70,8 @@ rtm.on(CLIENT_EVENTS.RTM.WS_ERROR, error => {
 });
 
 rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
+    // new message in a thread
+
     const eventJSON = JSON.parse(event);
 
     if (eventJSON.type === 'message') {
@@ -80,7 +82,6 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
             }
             return;
         } else if (eventJSON.subtype === 'message_replied') {
-            // new message in a thread
             return;
         }
 
@@ -95,6 +96,8 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
         } else if (text === 'end' && game) {
             sendMessage(`The end state was ${game.join(' ')}`, eventJSON.channel, `Users gave up.`);
             game = null;
+        } else if (text === 'song') {
+            sendSong(eventJSON.channel);
         } else {
             const regex = /(?:\s*(\:\w+\:)\s*)/g;
             match = regex.exec(text);
@@ -110,7 +113,11 @@ rtm.on(CLIENT_EVENTS.RTM.RAW_MESSAGE, (event) => {
 
                 if (result.inPlaceCount === 4) {
                     sendMessage(`:tada: :tada: BRAVO!! :tada: :tada:`, eventJSON.channel, `bravo`);
-                    game = null
+                    game = null;
+
+                    if (eventJSON.user === 'U44RYQQBG') {
+                        sendSong(eventJSON.channel);
+                    }
                 }
             } else {
                 // sendMessage('Idiot wut??', eventJSON.channel, `someone is haking us ${text}`)
@@ -128,6 +135,16 @@ const sendMessage = (text, channel, logMessage) => {
 const sendWelcomeMessage = (channel) => {
     const greetingMessage = `Hello people of :neopix:! Let's play a game, shall we? Hit \`start\` whenever you are ready :smile:`;
     sendMessage(greetingMessage, channel.id, 'Greeting.');
+};
+
+const sendSong = (channelId) => {
+    const song = `_Pomesaj ove noći crnu i zlatnu_
+_Ispuni zahteve da zaradis platu_
+_A radi dok ti klijent dise na vratu_
+_Pa mozda negde doguram_
+_Al' Neopiksu pripadam_
+> :laza:`;
+    sendMessage(song, channelId, 'Song');
 };
 
 // Start the connecting process
